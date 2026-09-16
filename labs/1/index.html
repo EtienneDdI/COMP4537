@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Game — COMP 4537 Lab 1</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Controls: a label, an input for n, and a Go button.
+       No text is hard-coded here that the user reads dynamically;
+       the label text is injected by JS from the strings file. -->
+  <div id="controls">
+    <label id="promptLabel" for="countInput"></label>
+    <input id="countInput" type="number" min="3" max="7" />
+    <button id="goButton"></button>
+  </div>
+
+  <!-- Where status messages ("Excellent memory!", errors...) appear -->
+  <p id="message"></p>
+
+  <!-- Where the game buttons get created -->
+  <div id="gameArea"></div>
+
+  <!-- type="module" lets us use import/export between JS files -->
+  <script type="module" src="js/script.js"></script>
+</body>
+</html>
