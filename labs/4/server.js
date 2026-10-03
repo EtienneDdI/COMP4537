@@ -2,6 +2,8 @@ const utils = require('./modules/utils.js')
 const lang = require('./lang/en/en.js')
 const http = require("http");
 
+const PORT = process.env.PORT || 3000;
+
 http.createServer((req, res) => {
 
     const url = new URL(req.url, `https://${req.headers.host}`);
@@ -20,7 +22,7 @@ http.createServer((req, res) => {
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(`<p style="color:blue">${message} ${utils.getDate()}</p>`);
     }
-}).listen(3000);
+}).listen(PORT);
 
 // http://localhost:3000/?name=Etienne
 
