@@ -1,5 +1,3 @@
-// This file was written with the assistance of AI (ChatGPT / Claude).
-
 const USER_MESSAGES = Object.freeze({
   APP_TITLE: "Lab 1: JSON, Object Constructor, localStorage",
   STUDENT_NAME: "Etienne Desgrees du Lou",

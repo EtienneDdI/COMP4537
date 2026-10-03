@@ -1,0 +1,14 @@
+Rubrics (additional deductions )
+
+ (-6) if Part B or C is not hosted 
+ (-4) if the url(s) are not posted at the comment sections  ( which is as equal as not hosting at all)
+ (-5 to -2) for any wrong or not fully correct answer to the questions about your code during in-person marking  
+
+ (-2) if you post the urls at the comment section but forgot to include  https:// and make it hyperlinked 
+ ( -2 ) if making the message in blue color is not done or is on the client side
+
+(-1) if you dont store the user facing message (Hello %1, What a beautiful day. Server current date and time is) in a separate file 
+
+(-2) of not fully OOP ( everything inside classes) 
+
+-10%  mark deduction for each day late, 0 after three days late submission
