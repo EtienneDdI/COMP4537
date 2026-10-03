@@ -4,7 +4,12 @@ const http = require("http");
 
 http.createServer((req, res) => {
 
-    const url = new URL(req.url, `http://${req.headers.host}`);
+    const url = new URL(req.url, `https://${req.headers.host}`);
+
+    if (url.pathname !== "/COMP4537/labs/4/getDate/") {
+        res.writeHead(400, { "Content-Type": "text/html" });
+        res.end("Error not found")
+    } else {
 
     const name = url.searchParams.get("name");
 
@@ -14,6 +19,7 @@ http.createServer((req, res) => {
 
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(`<p style="color:blue">${message} ${utils.getDate()}</p>`);
+    }
 }).listen(3000);
 
 // http://localhost:3000/?name=Etienne

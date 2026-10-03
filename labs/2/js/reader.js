@@ -1,4 +1,4 @@
-// This file was written with the assistance of AI (ChatGPT / Claude).
+// This file was written with the assistance of AI .
 
 class ReaderApp {
   constructor(listContainer, timestampElement) {
