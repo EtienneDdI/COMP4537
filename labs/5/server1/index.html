@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COMP4537 - Lab 5</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; }
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.1rem; margin-top: 32px; }
+        label { display: block; margin: 12px 0 4px; font-weight: bold; }
+        input[type="text"], textarea { width: 100%; padding: 8px; box-sizing: border-box; font-family: monospace; }
+        textarea { resize: vertical; }
+        button { margin-top: 12px; padding: 10px 20px; font-size: 1rem; cursor: pointer; }
+        button:disabled { opacity: .6; cursor: default; }
+        pre { background: #f4f4f4; border: 1px solid #ddd; padding: 12px; white-space: pre-wrap;
+              word-break: break-word; margin-top: 12px; min-height: 2rem; }
+        table { border-collapse: collapse; margin-top: 12px; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+    </style>
+    <script src="strings.js"></script>
+</head>
+<body>
+    <h1 id="title"></h1>
+
+    <label for="apiBase" id="endpointLabel"></label>
+    <input type="text" id="apiBase">
+
+    <!-- ===== 1) INSERT (POST) ===== -->
+    <h2 id="insertHeading"></h2>
+    <p id="insertIntro"></p>
+    <table>
+        <thead>
+            <tr><th>name</th><th>dateOfBirth</th></tr>
+        </thead>
+        <tbody id="rowsPreview"></tbody>
+    </table>
+    <button id="insertBtn"></button>
+
+    <!-- ===== 2) QUERY (GET) ===== -->
+    <h2 id="queryHeading"></h2>
+    <p id="queryIntro"></p>
+    <textarea id="sqlQuery" rows="4"></textarea>
+    <button id="submitBtn"></button>
+
+    <!-- ===== Server response ===== -->
+    <h2 id="responseHeading"></h2>
+    <pre id="output"></pre>
+
+    <script>
+        // --- Injection des strings (centralisees dans strings.js) ---
+        document.title = STRINGS.TITLE;
+        document.getElementById("title").textContent = STRINGS.TITLE;
+        document.getElementById("endpointLabel").textContent = STRINGS.ENDPOINT_LABEL;
+        document.getElementById("insertHeading").textContent = STRINGS.INSERT_HEADING;
+        document.getElementById("insertIntro").textContent = STRINGS.INSERT_INTRO;
+        document.getElementById("queryHeading").textContent = STRINGS.QUERY_HEADING;
+        document.getElementById("queryIntro").textContent = STRINGS.QUERY_INTRO;
+        document.getElementById("responseHeading").textContent = STRINGS.RESPONSE_HEADING;
+        document.getElementById("insertBtn").textContent = STRINGS.INSERT_BTN;
+        document.getElementById("submitBtn").textContent = STRINGS.SUBMIT_BTN;
+
+        const apiBase = document.getElementById("apiBase");
+        const sqlQuery = document.getElementById("sqlQuery");
+        const output = document.getElementById("output");
+        const insertBtn = document.getElementById("insertBtn");
+        const submitBtn = document.getElementById("submitBtn");
+
+        apiBase.value = STRINGS.API_BASE;
+        sqlQuery.placeholder = STRINGS.QUERY_PLACEHOLDER;
+        sqlQuery.value = STRINGS.QUERY_PLACEHOLDER;
+        output.textContent = STRINGS.RESPONSE_EMPTY;
+
+        // Apercu des 4 lignes a inserer.
+        STRINGS.ROWS.forEach(([name, dob]) => {
+            const tr = document.createElement("tr");
+            const tdName = document.createElement("td");
+            const tdDob = document.createElement("td");
+            tdName.textContent = name;
+            tdDob.textContent = dob;
+            tr.appendChild(tdName);
+            tr.appendChild(tdDob);
+            document.getElementById("rowsPreview").appendChild(tr);
+        });
+
+        // Affiche la reponse du serveur dans la zone de sortie.
+        function showResponse(res, data) {
+            output.textContent =
+                `HTTP ${res.status} ${res.statusText}\n` +
+                (typeof data === "string" ? data : JSON.stringify(data, null, 2));
+        }
+
+        async function parseBody(res) {
+            const text = await res.text();
+            try { return JSON.parse(text); } catch (_) { return text; }
+        }
+
+        // Construit un seul INSERT ... VALUES (...),(...) pour les 4 lignes.
+        function buildInsertQuery() {
+            const values = STRINGS.ROWS
+                .map(([name, dob]) => `('${name}', '${dob}')`)
+                .join(", ");
+            return `INSERT INTO patient (name, dateOfBirth) VALUES ${values}`;
+        }
+
+        // --- INSERT via POST ---
+        insertBtn.addEventListener("click", async () => {
+            insertBtn.disabled = true;
+            output.textContent = STRINGS.SENDING_POST;
+            try {
+                const res = await fetch(apiBase.value.trim(), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query: buildInsertQuery() })
+                });
+                showResponse(res, await parseBody(res));
+            } catch (err) {
+                output.textContent = STRINGS.REQUEST_FAILED + err.message;
+            } finally {
+                insertBtn.disabled = false;
+            }
+        });
+
+        // --- READ via GET : la requete SQL est encodee dans l'URL ---
+        submitBtn.addEventListener("click", async () => {
+            const query = sqlQuery.value.trim();
+            if (!query) return;
+            const endpoint = apiBase.value.trim() + encodeURIComponent(query);
+
+            submitBtn.disabled = true;
+            output.textContent = STRINGS.SENDING_GET;
+            try {
+                const res = await fetch(endpoint, { method: "GET" });
+                showResponse(res, await parseBody(res));
+            } catch (err) {
+                output.textContent = STRINGS.REQUEST_FAILED + err.message;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

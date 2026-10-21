@@ -1,0 +1,9 @@
+# Ne jamais versionner les dossiers de livraison ni le zip (contiennent des secrets)
+_livrable_TEAM-Lab5/
+D7-Lab5/
+*-Lab5/
+*.zip
+
+# Secrets et dependances (double protection, aussi gere dans server2/.gitignore)
+**/.env
+**/node_modules/
